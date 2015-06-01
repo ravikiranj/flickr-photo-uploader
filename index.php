@@ -25,7 +25,7 @@ if($_POST){
             rename($_FILES["file"]["tmp_name"],$newpath);
             /* Call uploadPhoto on success to upload photo to flickr */
             $status = uploadPhoto($newpath, $_POST["name"]);
-            if(!$photo_id) {
+            if(!$status) {
                 $error = 2;
             }
          }
@@ -37,10 +37,10 @@ function uploadPhoto($path, $title) {
     $apiSecret = "84d2e480c8e3c926";
     $permissions  = "write";
     $token        = "72157626228984291-4635fa88a6fed8f5";
-    global $photo_id;
+
     $f = new phpFlickr($apiKey, $apiSecret, true);
     $f->setToken($token);
-	$photo_id = $f->sync_upload($path, $title); //returns photo_id
+    return $f->async_upload($path, $title);
 }
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -63,7 +63,6 @@ function uploadPhoto($path, $title) {
 <?php
 if (isset($_POST['name']) && $error==0) {
     echo "  <h2>Your file has been uploaded to <a href='http://www.flickr.com/photos/61074807@N08/' target='_blank'>rkj_flickr's photo stream</a></h2>";
-	echo "  <p>Flicker photo_id: $photo_id </p>";
 }else {
     if($error == 1){
         echo "  <font color='red'>Please provide both name and a file</font>";
